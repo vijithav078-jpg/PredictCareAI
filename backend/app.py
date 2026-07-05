@@ -1,7 +1,7 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from predict import predict_machine
-from rag import search_manual
+# from rag import search_manual
 
 app = Flask(__name__)
 CORS(app)
@@ -37,13 +37,8 @@ def predict():
             tool_wear
         )
 
-        # RAG Query
-        if result == "Healthy Machine":
-            question = "How should a healthy machine be maintained?"
-        else:
-            question = "What maintenance should be performed when a machine failure is predicted?"
-
-        rag_answer = search_manual(question)
+        # RAG Placeholder
+        rag_answer = "RAG feature is available in the full version of PredictCare AI."
 
         if result == "Healthy Machine":
 
@@ -72,8 +67,9 @@ def predict():
     except Exception as e:
 
         return jsonify({
-            "error": str(e)
-        })
+            "status": "error",
+            "message": str(e)
+        }), 500
 
 
 if __name__ == "__main__":
