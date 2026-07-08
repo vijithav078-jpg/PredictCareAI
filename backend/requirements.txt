@@ -1,5 +1,6 @@
 Flask
 Flask-Cors
+gunicorn
 pandas
 numpy
 scikit-learn
@@ -7,8 +8,6 @@ joblib
 langchain
 langchain-community
 langchain-huggingface
-langchain-text-splitters
 sentence-transformers
 faiss-cpu
 pypdf
-gunicorn
