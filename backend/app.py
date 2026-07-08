@@ -1,7 +1,7 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from predict import predict_machine
-# from rag import search_manual
+from rag import search_manual
 
 app = Flask(__name__)
 CORS(app)
@@ -17,7 +17,6 @@ def home():
 
 @app.route("/predict", methods=["POST"])
 def predict():
-
     try:
 
         data = request.get_json()
@@ -28,7 +27,9 @@ def predict():
         torque = float(data["torque"])
         tool_wear = float(data["tool_wear"])
 
-        # ML Prediction
+        # ==========================
+        # Machine Learning Prediction
+        # ==========================
         result = predict_machine(
             air_temp,
             process_temp,
@@ -37,9 +38,26 @@ def predict():
             tool_wear
         )
 
-        # RAG Placeholder
-        rag_answer = "RAG feature is available in the full version of PredictCare AI."
+        # ==========================
+        # RAG Query
+        # ==========================
+        question = f"""
+        Machine Prediction: {result}
 
+        Air Temperature: {air_temp} °C
+        Process Temperature: {process_temp} °C
+        RPM: {rpm}
+        Torque: {torque} Nm
+        Tool Wear: {tool_wear} minutes
+
+        Suggest maintenance recommendations for this machine.
+        """
+
+        rag_answer = search_manual(question)
+
+        # ==========================
+        # Response
+        # ==========================
         if result == "Healthy Machine":
 
             return jsonify({
@@ -73,4 +91,4 @@ def predict():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=5000, debug=True)
