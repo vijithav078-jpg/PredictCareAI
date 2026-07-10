@@ -15,6 +15,9 @@ def home():
     })
 
 
+# ==========================================
+# ML Prediction API
+# ==========================================
 @app.route("/predict", methods=["POST"])
 def predict():
     try:
@@ -27,9 +30,7 @@ def predict():
         torque = float(data["torque"])
         tool_wear = float(data["tool_wear"])
 
-        # ==========================
-        # Machine Learning Prediction
-        # ==========================
+        # ML Prediction
         result = predict_machine(
             air_temp,
             process_temp,
@@ -38,9 +39,7 @@ def predict():
             tool_wear
         )
 
-        # ==========================
-        # RAG Query
-        # ==========================
+        # RAG Recommendation
         question = f"""
         Machine Prediction: {result}
 
@@ -55,9 +54,6 @@ def predict():
 
         rag_answer = search_manual(question)
 
-        # ==========================
-        # Response
-        # ==========================
         if result == "Healthy Machine":
 
             return jsonify({
@@ -81,6 +77,32 @@ def predict():
                 "recommendation": "Immediate inspection required. Replace worn components.",
                 "rag_response": rag_answer
             })
+
+    except Exception as e:
+
+        return jsonify({
+            "status": "error",
+            "message": str(e)
+        }), 500
+
+
+# ==========================================
+# RAG Chat API
+# ==========================================
+@app.route("/ask", methods=["POST"])
+def ask():
+
+    try:
+
+        data = request.get_json()
+
+        question = data.get("question", "")
+
+        answer = search_manual(question)
+
+        return jsonify({
+            "answer": answer
+        })
 
     except Exception as e:
 
